@@ -129,6 +129,70 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--bd);border-radius:var(--rd);padding:10px 22px;color:var(--t1);font-size:13px;z-index:2000;transition:transform .3s ease;box-shadow:0 10px 40px rgba(0,0,0,.45)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
+
+/* Auth System */
+.auth-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#08091a,#0e1025);z-index:5000;display:flex;align-items:center;justify-content:center}
+.auth-box{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:40px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.auth-logo{text-align:center;margin-bottom:24px}
+.auth-logo .al-icon{font-size:48px;margin-bottom:8px}
+.auth-logo .al-title{font-size:24px;font-weight:800;background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-logo .al-sub{font-size:12px;color:var(--t3);margin-top:4px}
+.auth-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--inp);border-radius:10px;padding:3px}
+.auth-tab{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;transition:.3s}
+.auth-tab.active{background:rgba(124,58,237,.2);color:#c4b5fd}
+.auth-input{width:100%;padding:12px 16px;background:var(--inp);border:1px solid var(--bd);border-radius:10px;color:var(--t1);font-size:14px;margin-bottom:12px;outline:none;transition:.3s}
+.auth-input:focus{border-color:var(--p)}
+.auth-input::placeholder{color:var(--t3)}
+.auth-btn{width:100%;padding:12px;background:var(--gr);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.3s}
+.auth-btn:hover{opacity:.9;transform:translateY(-1px)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-err{color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px}
+.auth-alt{text-align:center;margin-top:16px;font-size:12px;color:var(--t3)}
+.auth-alt a{color:#7c3aed;cursor:pointer;text-decoration:none}
+/* User bar */
+.user-bar{display:flex;align-items:center;gap:10px;padding:4px 0}
+.user-bar .ub-avatar{width:32px;height:32px;border-radius:50%;background:var(--gr);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.user-bar .ub-name{font-size:13px;font-weight:600;color:var(--t1)}
+.user-bar .ub-email{font-size:10px;color:var(--t3)}
+.user-bar .ub-btns{margin-left:auto;display:flex;gap:6px}
+.user-bar .ub-btn{padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--t2);font-size:11px;cursor:pointer;transition:.3s}
+.user-bar .ub-btn:hover{border-color:var(--p);color:var(--t1)}
+.user-bar .ub-btn.admin{border-color:rgba(239,68,68,.3);color:#ef4444}
+/* Assets panel */
+.assets-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.assets-overlay.act{display:flex}
+.assets-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;width:800px;max-width:95vw;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+.assets-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.assets-hd h3{font-size:16px;font-weight:700;flex:1}
+.assets-hd .ah-close{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer}
+.assets-stats{display:flex;gap:16px;padding:12px 20px;border-bottom:1px solid var(--bd)}
+.assets-stats .as-item{font-size:12px;color:var(--t2)}
+.assets-stats .as-num{font-weight:700;color:var(--t1);margin-right:4px}
+.assets-grid{padding:16px 20px;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.asset-card{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden;cursor:pointer;transition:.3s}
+.asset-card:hover{border-color:var(--p);transform:translateY(-2px)}
+.asset-card .ac-thumb{width:100%;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.asset-card .ac-thumb img,.asset-card .ac-thumb video{width:100%;height:100%;object-fit:cover}
+.asset-card .ac-info{padding:8px 10px}
+.asset-card .ac-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asset-card .ac-meta{font-size:10px;color:var(--t3);margin-top:2px}
+.assets-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--t3)}
+/* Admin panel */
+.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:4000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.admin-overlay.act{display:flex}
+.admin-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;width:900px;max-width:95vw;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+.admin-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px}
+.admin-hd h3{font-size:16px;font-weight:700;flex:1;color:#ef4444}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px}
+.admin-stat{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;text-align:center}
+.admin-stat .as-n{font-size:28px;font-weight:800;background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-stat .as-l{font-size:11px;color:var(--t3);margin-top:4px}
+.admin-table{margin:0 20px 20px;overflow-x:auto}
+.admin-table table{width:100%;border-collapse:collapse;font-size:12px}
+.admin-table th{text-align:left;padding:10px 12px;background:var(--card);color:var(--t2);font-weight:700;border-bottom:1px solid var(--bd)}
+.admin-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--t1)}
+.admin-table tr:hover td{background:rgba(124,58,237,.03)}
+
 /* Contact Widget */
 .contact-fab{position:fixed;bottom:28px;right:28px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .contact-btn{width:56px;height:56px;border-radius:50%;background:var(--gr);border:none;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,.4);transition:var(--tr);display:flex;align-items:center;justify-content:center}
@@ -173,13 +237,65 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .reg-divider{height:1px;background:var(--bd);margin:16px 0}
 .reg-tip{font-size:11px;color:var(--t3);line-height:1.6;text-align:center;padding:8px;background:rgba(124,58,237,.05);border-radius:8px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
+
+<!-- Auth Overlay -->
+<div class="auth-overlay" id="authOverlay">
+<div class="auth-box">
+<div class="auth-logo">
+<div class="al-icon">🎬</div>
+<div class="al-title">MovieHub</div>
+<div class="al-sub">全球AI模型聚合 · 多模态创作平台</div>
+</div>
+<div class="auth-tabs">
+<div class="auth-tab active" onclick="switchAuth('login')">登录</div>
+<div class="auth-tab" onclick="switchAuth('signup')">注册</div>
+</div>
+<div class="auth-err" id="authErr"></div>
+<form id="authForm" onsubmit="handleAuth(event)">
+<input class="auth-input" id="authEmail" type="email" placeholder="邮箱地址" required>
+<input class="auth-input" id="authPwd" type="password" placeholder="密码（至少6位）" required minlength="6">
+<input class="auth-input" id="authName" type="text" placeholder="昵称（选填）" style="display:none">
+<button class="auth-btn" type="submit" id="authBtn">登录</button>
+</form>
+<div class="auth-alt" id="authAlt">还没有账号？<a onclick="switchAuth('signup')">立即注册</a></div>
+</div>
+</div>
+
+<!-- Assets Panel -->
+<div class="assets-overlay" id="assetsOverlay" onclick="if(event.target===this)closeAssets()">
+<div class="assets-panel">
+<div class="assets-hd"><span style="font-size:20px">📁</span><h3>我的资产库</h3><button class="ah-close" onclick="closeAssets()">&times;</button></div>
+<div class="assets-stats" id="assetsStats"></div>
+<div class="assets-grid" id="assetsGrid"><div class="assets-empty">🎬 还没有生成内容，快去创作吧！</div></div>
+</div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-overlay" id="adminOverlay" onclick="if(event.target===this)closeAdmin()">
+<div class="admin-panel">
+<div class="admin-hd"><span style="font-size:20px">👑</span><h3>管理员面板</h3><button class="ah-close" onclick="closeAdmin()">&times;</button></div>
+<div class="admin-stats" id="adminStats"></div>
+<div class="admin-table" id="adminTable"></div>
+</div>
+</div>
+
 <div class="bgfx"></div>
 <div class="ct">
 <header class="hd">
 <div class="logo"><div class="li">🎬</div><span class="lt">MovieHub <span class="ls">for Harley</span></span></div>
 <p class="hds">全球 AI 模型聚合 · 生文 / 生图 / 生视频 · 多模态创作一站搞定</p>
+<div class="user-bar" id="userBar" style="display:none">
+<div class="ub-avatar" id="ubAvatar">H</div>
+<div><div class="ub-name" id="ubName">用户</div><div class="ub-email" id="ubEmail">email</div></div>
+<div class="ub-btns">
+<div class="ub-btn" onclick="openAssets()">📁 资产库</div>
+<div class="ub-btn admin" id="adminBtn" onclick="openAdmin()" style="display:none">👑 管理</div>
+<div class="ub-btn" onclick="doLogout()">退出</div>
+</div>
+</div>
 </header>
 <div class="mnav" id="modeNav">
 <div class="mt a" data-m="video">🎬 生视频 <span class="badge">HOT</span></div>
@@ -543,7 +659,12 @@ else if(mode==='image')c.innerHTML=`<img src="${url}" style="width:100%;height:1
 else c.innerHTML=`<div style="padding:20px;font-size:14px;line-height:1.8;white-space:pre-wrap;overflow:auto;max-height:400px">${url}</div>`;
 const extra=uImg?' + 参考图片':(uVid?' + 参考视频':'');
 $('rinfo').innerHTML=`<strong>模型：</strong>${sel.n} (${sel.pl}) · <strong>模式：</strong>${{video:'生视频',image:'生图',text:'生文'}[mode]}${extra} · <strong>平台：</strong>${$('plat').value}`;
-setTimeout(()=>$('psec').classList.remove('act'),1200);}
+setTimeout(()=>$('psec').classList.remove('act'),1200);
+  // Auto save to assets
+  if(curUser && url && typeof url === 'string' && url.startsWith('http')){
+    saveAsset(url, mode, sel?.n||'unknown', $('pi').value);
+  }
+}
 function cpP(){navigator.clipboard.writeText($('pi').value).then(()=>toast('📋 已复制'));}
 function dlR(){if(!rUrl){toast('⚠️ 无可下载内容');return;}const a=document.createElement('a');a.href=rUrl;a.download='moviehub-'+Date.now()+(mode==='image'?'.png':'.mp4');a.click();toast('⬇ 开始下载');}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -556,6 +677,166 @@ function closeReg(){$('regModal').classList.remove('act');}
 $('regModal').onclick=e=>{if(e.target===$('regModal'))closeReg();};
 // Init
 applyMode();updAK();
+
+// ===== Supabase Auth + Assets + Admin =====
+const SUPA_URL="https://zumtthbthanbyihoaevl.supabase.co";
+const SUPA_KEY="sb_publishable_23ffcJkMKM0ZNngnhGDx3A_QVMt5DaP";
+const ADMIN_EMAIL="harleyywang@tencent.com";
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+let curUser=null;
+let authMode='login';
+
+// Auth UI
+function switchAuth(m){
+  authMode=m;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(m==='login'?0:1)));
+  $('authName').style.display=m==='signup'?'':'none';
+  $('authBtn').textContent=m==='login'?'登录':'注册';
+  $('authAlt').innerHTML=m==='login'?'还没有账号？<a onclick="switchAuth(\'signup\')">立即注册</a>':'已有账号？<a onclick="switchAuth(\'login\')">去登录</a>';
+  $('authErr').textContent='';
+}
+
+async function handleAuth(e){
+  e.preventDefault();
+  const email=$('authEmail').value.trim();
+  const pwd=$('authPwd').value;
+  const name=$('authName').value.trim();
+  const btn=$('authBtn');
+  btn.disabled=true;btn.textContent='处理中...';
+  $('authErr').textContent='';
+  try{
+    if(authMode==='signup'){
+      const {data,error}=await supabase.auth.signUp({email,password:pwd,options:{data:{display_name:name||email.split('@')[0]}}});
+      if(error)throw error;
+      if(data.user&&!data.user.confirmed_at){
+        $('authErr').style.color='#10b981';
+        $('authErr').textContent='✅ 注册成功！请查收验证邮件后登录';
+        switchAuth('login');
+      }else{
+        await onLogin(data.user);
+      }
+    }else{
+      const {data,error}=await supabase.auth.signInWithPassword({email,password:pwd});
+      if(error)throw error;
+      await onLogin(data.user);
+    }
+  }catch(err){
+    $('authErr').style.color='#ef4444';
+    $('authErr').textContent=err.message.includes('Invalid')?'邮箱或密码错误':err.message.includes('already')?'该邮箱已注册，请直接登录':err.message;
+  }
+  btn.disabled=false;btn.textContent=authMode==='login'?'登录':'注册';
+}
+
+async function onLogin(user){
+  curUser=user;
+  $('authOverlay').style.display='none';
+  const name=user.user_metadata?.display_name||user.email.split('@')[0];
+  $('ubAvatar').textContent=name[0].toUpperCase();
+  $('ubName').textContent=name;
+  $('ubEmail').textContent=user.email;
+  $('userBar').style.display='flex';
+  if(user.email===ADMIN_EMAIL)$('adminBtn').style.display='';
+  // Save login record to localStorage
+  const logins=JSON.parse(localStorage.getItem('mh_logins')||'[]');
+  const now=new Date().toISOString();
+  const existing=logins.find(l=>l.id===user.id);
+  if(existing){existing.last_login=now;existing.login_count=(existing.login_count||0)+1;existing.name=name;}
+  else logins.push({id:user.id,email:user.email,name:name,created:now,last_login:now,login_count:1,assets_count:0});
+  localStorage.setItem('mh_logins',JSON.stringify(logins));
+}
+
+async function doLogout(){
+  await supabase.auth.signOut();
+  curUser=null;
+  $('userBar').style.display='none';
+  $('authOverlay').style.display='flex';
+  $('adminBtn').style.display='none';
+}
+
+// Check session on load
+(async()=>{
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session?.user){await onLogin(session.user);}
+  else{$('authOverlay').style.display='flex';}
+})();
+
+// ===== Assets =====
+function openAssets(){
+  $('assetsOverlay').classList.add('act');
+  loadAssets();
+}
+function closeAssets(){$('assetsOverlay').classList.remove('act');}
+
+function loadAssets(){
+  if(!curUser)return;
+  const assets=JSON.parse(localStorage.getItem('mh_assets_'+curUser.id)||'[]');
+  const grid=$('assetsGrid');
+  const stats=$('assetsStats');
+  const videos=assets.filter(a=>a.type==='video');
+  const images=assets.filter(a=>a.type==='image');
+  const texts=assets.filter(a=>a.type==='text');
+  stats.innerHTML=`<div class="as-item"><span class="as-num">${assets.length}</span>总资产</div><div class="as-item"><span class="as-num">${videos.length}</span>视频</div><div class="as-item"><span class="as-num">${images.length}</span>图片</div><div class="as-item"><span class="as-num">${texts.length}</span>文案</div>`;
+  if(!assets.length){grid.innerHTML='<div class="assets-empty">🎬 还没有生成内容，快去创作吧！</div>';return;}
+  grid.innerHTML=assets.sort((a,b)=>new Date(b.created)-new Date(a.created)).map(a=>{
+    const thumb=a.type==='video'?`<video src="${a.url}" muted></video>`:a.type==='image'?`<img src="${a.url}">`:`<div style="padding:10px;font-size:10px;color:var(--t2);overflow:hidden;height:100%">${a.url.substring(0,100)}...</div>`;
+    return `<div class="asset-card" onclick="previewAsset('${a.id}')"><div class="ac-thumb">${thumb}</div><div class="ac-info"><div class="ac-name">${a.model}</div><div class="ac-meta">${a.type==='video'?'🎬':'🎨'} ${new Date(a.created).toLocaleDateString('zh-CN')} · ${a.prompt?.substring(0,20)||''}</div></div></div>`;
+  }).join('');
+}
+
+function previewAsset(id){
+  if(!curUser)return;
+  const assets=JSON.parse(localStorage.getItem('mh_assets_'+curUser.id)||'[]');
+  const a=assets.find(x=>x.id===id);
+  if(!a)return;
+  if(a.type==='video')window.open(a.url,'_blank');
+  else if(a.type==='image')window.open(a.url,'_blank');
+  else{navigator.clipboard.writeText(a.url);toast('📋 已复制文案');}
+}
+
+function saveAsset(url,type,model,prompt){
+  if(!curUser)return;
+  const assets=JSON.parse(localStorage.getItem('mh_assets_'+curUser.id)||'[]');
+  assets.push({id:Date.now().toString(),url:url,type:type,model:model,prompt:prompt,created:new Date().toISOString()});
+  localStorage.setItem('mh_assets_'+curUser.id,JSON.stringify(assets));
+  // Update user stats
+  const logins=JSON.parse(localStorage.getItem('mh_logins')||'[]');
+  const u=logins.find(l=>l.id===curUser.id);
+  if(u){u.assets_count=assets.length;localStorage.setItem('mh_logins',JSON.stringify(logins));}
+  toast('✅ 已保存到资产库');
+}
+
+// ===== Admin =====
+function openAdmin(){
+  if(!curUser||curUser.email!==ADMIN_EMAIL)return;
+  $('adminOverlay').classList.add('act');
+  loadAdmin();
+}
+function closeAdmin(){$('adminOverlay').classList.remove('act');}
+
+function loadAdmin(){
+  const logins=JSON.parse(localStorage.getItem('mh_logins')||'[]');
+  const totalUsers=logins.length;
+  const totalAssets=logins.reduce((s,u)=>s+(u.assets_count||0),0);
+  const todayLogins=logins.filter(u=>u.last_login&&u.last_login.startsWith(new Date().toISOString().split('T')[0])).length;
+  const totalLogins=logins.reduce((s,u)=>s+(u.login_count||0),0);
+  $('adminStats').innerHTML=`
+    <div class="admin-stat"><div class="as-n">${totalUsers}</div><div class="as-l">注册用户数</div></div>
+    <div class="admin-stat"><div class="as-n">${todayLogins}</div><div class="as-l">今日活跃</div></div>
+    <div class="admin-stat"><div class="as-n">${totalAssets}</div><div class="as-l">总资产数</div></div>
+    <div class="admin-stat"><div class="as-n">${totalLogins}</div><div class="as-l">总登录次数</div></div>`;
+  $('adminTable').innerHTML=`<table>
+    <tr><th>用户</th><th>邮箱</th><th>注册时间</th><th>最近登录</th><th>登录次数</th><th>资产数</th></tr>
+    ${logins.sort((a,b)=>new Date(b.last_login||0)-new Date(a.last_login||0)).map(u=>`<tr>
+      <td><strong>${u.name||'-'}</strong></td>
+      <td>${u.email}</td>
+      <td>${u.created?new Date(u.created).toLocaleDateString('zh-CN'):'-'}</td>
+      <td>${u.last_login?new Date(u.last_login).toLocaleString('zh-CN'):'-'}</td>
+      <td>${u.login_count||0}</td>
+      <td>${u.assets_count||0}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
 </script>
 </body>
 </html>
