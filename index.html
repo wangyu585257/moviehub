@@ -641,7 +641,7 @@ if(!r.ok)continue;const d=await r.json();
 if(d.status==='succeeded'){uPg(100,'完成！');const o=d.output;rUrl=typeof o==='string'?o:(Array.isArray(o)?o[0]:o?.video||o?.url||o?.image);if(rUrl)showR(rUrl);return;}
 if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败');
 uPg(Math.min(90,25+(i/150)*65),['模型加载中...','正在生成...','合成输出...','渲染中...'][Math.min(Math.floor(i/12),3)]);}
-throw new Error('生成超时');}}
+throw new Error('生成超时');}
 async function genSF(ak,pr){uPg(10,'调用SiliconFlow...');const body={model:'Wan-AI/Wan2.1-T2V-14B',prompt:pr};if(uImg)body.image=await f2b(uImg);
 const rsp=await fetch('https://api.siliconflow.cn/v1/video/submit',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
 if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.message||'错误');}
@@ -714,9 +714,9 @@ function switchAuth(m){
   $('authName').style.display=m==='signup'?'':'none';
   $('authBtn').textContent=m==='login'?'登录':'注册';
   if(m==='login'){
-    $('authAlt').innerHTML='还没有账号？<a onclick="switchAuth(&#39;signup&#39;)">立即注册</a>';
+    $('authAlt').innerHTML="还没有账号？<a onclick=\"switchAuth('signup')\">立即注册</a>";
   }else{
-    $('authAlt').innerHTML='已有账号？<a onclick="switchAuth(&#39;login&#39;)">去登录</a>';
+    $('authAlt').innerHTML="已有账号？<a onclick=\"switchAuth('login')\">去登录</a>";
   }
   $('authErr').textContent='';
 }
