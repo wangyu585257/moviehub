@@ -620,33 +620,28 @@ b.classList.remove('ld');b.disabled=false;}
 async function genRep(ak,pr,it){uPg(10,'提交任务...');const inp={prompt:pr};
 if(uImg&&(it==='i2v'||it==='i2i')){uPg(15,'上传图片...');inp.image=await f2b(uImg);}
 if(uVid&&it==='v2v'){uPg(15,'上传视频...');inp.video=await f2b(uVid);}
-if(mode==='video'){inp.aspect_ratio=$('ar').value.replace(':','_');const dur=parseInt($('dur').value);inp.duration=dur;inp.num_seconds=dur;inp.length=dur;}
+if(mode==='video'){inp.aspect_ratio=$('ar').value.replace(':','_');const dur=parseInt($('dur').value);inp.duration=dur;inp.num_seconds=dur;}
 else if(mode==='image'){inp.aspect_ratio=$('ar').value.replace(':','_');}
 let rsp;
 try{
-rsp=await fetch('https://api.replicate.com/v1/models/'+sel.r+'/predictions',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json','Prefer':'wait'},body:JSON.stringify({input:inp})});
-}catch(corsErr){
-// CORS error - try alternative endpoint
-try{
 rsp=await fetch('https://api.replicate.com/v1/predictions',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify({model:sel.r,input:inp})});
-}catch(e2){throw new Error('网络请求失败，可能是浏览器CORS限制。建议：1)检查API Key是否正确 2)尝试切换到SiliconFlow或HuggingFace平台');}
-}
-if(!rsp.ok){const e=await rsp.json().catch(()=>({}));
-if(rsp.status===401)throw new Error('API Key无效，请检查Replicate密钥');
-if(rsp.status===402)throw new Error('Replicate余额不足，请充值或换免费平台');
-if(rsp.status===422)throw new Error('参数错误：'+(e.detail||JSON.stringify(e)));
-throw new Error(e.detail||'API错误 '+rsp.status);}
+}catch(e){throw new Error('Replicate API连接失败(CORS限制)。Replicate暂不支持浏览器直接调用，请切换平台到 SiliconFlow 或 fal.ai 重试');}
+if(!rsp||!rsp.ok){const e=rsp?await rsp.json().catch(()=>({})):{};
+if(rsp&&rsp.status===401)throw new Error('API Key无效，请检查Replicate密钥');
+if(rsp&&rsp.status===402)throw new Error('Replicate余额不足');
+if(rsp&&rsp.status===422)throw new Error('参数错误：'+(e.detail||JSON.stringify(e)));
+throw new Error(e.detail||'API错误 '+(rsp?rsp.status:'unknown'));}
 const pd=await rsp.json();
-if(pd.output){uPg(100,'🎉 完成！');rUrl=typeof pd.output==='string'?pd.output:(Array.isArray(pd.output)?pd.output[0]:pd.output?.video||pd.output?.url||pd.output?.image);if(rUrl)showR(rUrl);return;}
+if(pd.output){uPg(100,'完成！');rUrl=typeof pd.output==='string'?pd.output:(Array.isArray(pd.output)?pd.output[0]:pd.output?.video||pd.output?.url);if(rUrl)showR(rUrl);return;}
 uPg(25,'等待生成...');
 const pollUrl=pd.urls?.get||'https://api.replicate.com/v1/predictions/'+pd.id;
 for(let i=0;i<150;i++){await slp(3000);
-let r;try{r=await fetch(pollUrl,{headers:{'Authorization':'Bearer '+ak}});}catch(e){continue;}
-const d=await r.json();
-if(d.status==='succeeded'){uPg(100,'🎉 完成！');const o=d.output;rUrl=typeof o==='string'?o:(Array.isArray(o)?o[0]:o?.video||o?.url||o?.image);if(rUrl)showR(rUrl);return;}
-if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败，请换个模型重试');
+let r;try{r=await fetch(pollUrl,{headers:{'Authorization':'Bearer '+ak}});}catch(e){uPg(Math.min(90,25+i),'网络重试...');continue;}
+if(!r.ok)continue;const d=await r.json();
+if(d.status==='succeeded'){uPg(100,'完成！');const o=d.output;rUrl=typeof o==='string'?o:(Array.isArray(o)?o[0]:o?.video||o?.url||o?.image);if(rUrl)showR(rUrl);return;}
+if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败');
 uPg(Math.min(90,25+(i/150)*65),['模型加载中...','正在生成...','合成输出...','渲染中...'][Math.min(Math.floor(i/12),3)]);}
-throw new Error('生成超时，请重试或换个模型');}}
+throw new Error('生成超时');}}
 async function genSF(ak,pr){uPg(10,'调用SiliconFlow...');const body={model:'Wan-AI/Wan2.1-T2V-14B',prompt:pr};if(uImg)body.image=await f2b(uImg);
 const rsp=await fetch('https://api.siliconflow.cn/v1/video/submit',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
 if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.message||'错误');}
@@ -703,8 +698,13 @@ let supa=null;
 let curUser=null;
 let authMode='login';
 try{
-  if(window.supabase&&window.supabase.createClient){supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}
-  else{console.error('Supabase SDK not loaded');}
+  var _sb=window.supabase;
+  if(_sb&&typeof _sb.createClient==='function'){
+    supa=_sb.createClient(SUPA_URL,SUPA_KEY);
+    console.log('Supabase connected');
+  }else{
+    console.error('Supabase SDK not found. window.supabase=',typeof _sb);
+  }
 }catch(e){console.error('Supabase init error:',e);}
 
 // Auth UI
@@ -712,8 +712,12 @@ function switchAuth(m){
   authMode=m;
   document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(m==='login'?0:1)));
   $('authName').style.display=m==='signup'?'':'none';
-  $('authBtn').textContent=m==='login'?'\u767B\u5F55':'\u6CE8\u518C';
-  $('authAlt').innerHTML=m==='login'?'\u8FD8\u6CA1\u6709\u8D26\u53F7\uFF1F<a onclick="switchAuth(\'signup\')">\u7ACB\u5373\u6CE8\u518C</a>':'\u5DF2\u6709\u8D26\u53F7\uFF1F<a onclick="switchAuth(\'login\')">\u53BB\u767B\u5F55</a>';
+  $('authBtn').textContent=m==='login'?'登录':'注册';
+  if(m==='login'){
+    $('authAlt').innerHTML='还没有账号？<a onclick="switchAuth(&#39;signup&#39;)">立即注册</a>';
+  }else{
+    $('authAlt').innerHTML='已有账号？<a onclick="switchAuth(&#39;login&#39;)">去登录</a>';
+  }
   $('authErr').textContent='';
 }
 
