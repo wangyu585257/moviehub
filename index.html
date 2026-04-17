@@ -620,16 +620,33 @@ b.classList.remove('ld');b.disabled=false;}
 async function genRep(ak,pr,it){uPg(10,'提交任务...');const inp={prompt:pr};
 if(uImg&&(it==='i2v'||it==='i2i')){uPg(15,'上传图片...');inp.image=await f2b(uImg);}
 if(uVid&&it==='v2v'){uPg(15,'上传视频...');inp.video=await f2b(uVid);}
-if(mode==='video'){inp.aspect_ratio=$('ar').value;inp.duration=parseInt($('dur').value);inp.resolution=$('res').value;}
-else if(mode==='image'){inp.aspect_ratio=$('ar').value;}
-const rsp=await fetch('https://api.replicate.com/v1/models/'+sel.r+'/predictions',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify({input:inp})});
-if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.detail||'API错误 '+rsp.status);}
-const pd=await rsp.json();uPg(25,'等待生成...');
-const url=pd.urls?.get||pd.url||'https://api.replicate.com/v1/predictions/'+pd.id;
-for(let i=0;i<150;i++){await slp(3000);const r=await fetch(url,{headers:{'Authorization':'Bearer '+ak}});const d=await r.json();
+if(mode==='video'){inp.aspect_ratio=$('ar').value.replace(':','_');const dur=parseInt($('dur').value);inp.duration=dur;inp.num_seconds=dur;inp.length=dur;}
+else if(mode==='image'){inp.aspect_ratio=$('ar').value.replace(':','_');}
+let rsp;
+try{
+rsp=await fetch('https://api.replicate.com/v1/models/'+sel.r+'/predictions',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json','Prefer':'wait'},body:JSON.stringify({input:inp})});
+}catch(corsErr){
+// CORS error - try alternative endpoint
+try{
+rsp=await fetch('https://api.replicate.com/v1/predictions',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify({model:sel.r,input:inp})});
+}catch(e2){throw new Error('网络请求失败，可能是浏览器CORS限制。建议：1)检查API Key是否正确 2)尝试切换到SiliconFlow或HuggingFace平台');}
+}
+if(!rsp.ok){const e=await rsp.json().catch(()=>({}));
+if(rsp.status===401)throw new Error('API Key无效，请检查Replicate密钥');
+if(rsp.status===402)throw new Error('Replicate余额不足，请充值或换免费平台');
+if(rsp.status===422)throw new Error('参数错误：'+(e.detail||JSON.stringify(e)));
+throw new Error(e.detail||'API错误 '+rsp.status);}
+const pd=await rsp.json();
+if(pd.output){uPg(100,'🎉 完成！');rUrl=typeof pd.output==='string'?pd.output:(Array.isArray(pd.output)?pd.output[0]:pd.output?.video||pd.output?.url||pd.output?.image);if(rUrl)showR(rUrl);return;}
+uPg(25,'等待生成...');
+const pollUrl=pd.urls?.get||'https://api.replicate.com/v1/predictions/'+pd.id;
+for(let i=0;i<150;i++){await slp(3000);
+let r;try{r=await fetch(pollUrl,{headers:{'Authorization':'Bearer '+ak}});}catch(e){continue;}
+const d=await r.json();
 if(d.status==='succeeded'){uPg(100,'🎉 完成！');const o=d.output;rUrl=typeof o==='string'?o:(Array.isArray(o)?o[0]:o?.video||o?.url||o?.image);if(rUrl)showR(rUrl);return;}
-if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败');
-uPg(Math.min(90,25+(i/150)*65),['模型加载...','正在生成...','合成输出...','渲染中...'][Math.min(Math.floor(i/12),3)]);}}
+if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败，请换个模型重试');
+uPg(Math.min(90,25+(i/150)*65),['模型加载中...','正在生成...','合成输出...','渲染中...'][Math.min(Math.floor(i/12),3)]);}
+throw new Error('生成超时，请重试或换个模型');}}
 async function genSF(ak,pr){uPg(10,'调用SiliconFlow...');const body={model:'Wan-AI/Wan2.1-T2V-14B',prompt:pr};if(uImg)body.image=await f2b(uImg);
 const rsp=await fetch('https://api.siliconflow.cn/v1/video/submit',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
 if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.message||'错误');}
