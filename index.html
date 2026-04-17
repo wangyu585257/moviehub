@@ -682,22 +682,27 @@ applyMode();updAK();
 const SUPA_URL="https://zumtthbthanbyihoaevl.supabase.co";
 const SUPA_KEY="sb_publishable_23ffcJkMKM0ZNngnhGDx3A_QVMt5DaP";
 const ADMIN_EMAIL="harleyywang@tencent.com";
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+let supa=null;
 let curUser=null;
 let authMode='login';
+try{
+  if(window.supabase&&window.supabase.createClient){supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}
+  else{console.error('Supabase SDK not loaded');}
+}catch(e){console.error('Supabase init error:',e);}
 
 // Auth UI
 function switchAuth(m){
   authMode=m;
   document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(m==='login'?0:1)));
   $('authName').style.display=m==='signup'?'':'none';
-  $('authBtn').textContent=m==='login'?'登录':'注册';
-  $('authAlt').innerHTML=m==='login'?'还没有账号？<a onclick="switchAuth(\'signup\')">立即注册</a>':'已有账号？<a onclick="switchAuth(\'login\')">去登录</a>';
+  $('authBtn').textContent=m==='login'?'\u767B\u5F55':'\u6CE8\u518C';
+  $('authAlt').innerHTML=m==='login'?'\u8FD8\u6CA1\u6709\u8D26\u53F7\uFF1F<a onclick="switchAuth(\'signup\')">\u7ACB\u5373\u6CE8\u518C</a>':'\u5DF2\u6709\u8D26\u53F7\uFF1F<a onclick="switchAuth(\'login\')">\u53BB\u767B\u5F55</a>';
   $('authErr').textContent='';
 }
 
 async function handleAuth(e){
   e.preventDefault();
+  if(!supa){$('authErr').style.color='#ef4444';$('authErr').textContent='服务连接中，请稍后重试';return;}
   const email=$('authEmail').value.trim();
   const pwd=$('authPwd').value;
   const name=$('authName').value.trim();
@@ -706,7 +711,7 @@ async function handleAuth(e){
   $('authErr').textContent='';
   try{
     if(authMode==='signup'){
-      const {data,error}=await supabase.auth.signUp({email,password:pwd,options:{data:{display_name:name||email.split('@')[0]}}});
+      const {data,error}=await supa.auth.signUp({email,password:pwd,options:{data:{display_name:name||email.split('@')[0]}}});
       if(error)throw error;
       if(data.user&&!data.user.confirmed_at){
         $('authErr').style.color='#10b981';
@@ -716,7 +721,7 @@ async function handleAuth(e){
         await onLogin(data.user);
       }
     }else{
-      const {data,error}=await supabase.auth.signInWithPassword({email,password:pwd});
+      const {data,error}=await supa.auth.signInWithPassword({email,password:pwd});
       if(error)throw error;
       await onLogin(data.user);
     }
@@ -746,7 +751,7 @@ async function onLogin(user){
 }
 
 async function doLogout(){
-  await supabase.auth.signOut();
+  if(supa)await supa.auth.signOut();
   curUser=null;
   $('userBar').style.display='none';
   $('authOverlay').style.display='flex';
@@ -755,9 +760,12 @@ async function doLogout(){
 
 // Check session on load
 (async()=>{
-  const {data:{session}}=await supabase.auth.getSession();
-  if(session?.user){await onLogin(session.user);}
-  else{$('authOverlay').style.display='flex';}
+  if(!supa){$('authOverlay').style.display='flex';return;}
+  try{
+    const {data:{session}}=await supa.auth.getSession();
+    if(session?.user){await onLogin(session.user);}
+    else{$('authOverlay').style.display='flex';}
+  }catch(e){console.error('Session check error:',e);$('authOverlay').style.display='flex';}
 })();
 
 // ===== Assets =====
