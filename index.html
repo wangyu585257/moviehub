@@ -642,20 +642,31 @@ if(d.status==='succeeded'){uPg(100,'完成！');const o=d.output;rUrl=typeof o==
 if(d.status==='failed'||d.status==='canceled')throw new Error(d.error||'生成失败');
 uPg(Math.min(90,25+(i/150)*65),['模型加载中...','正在生成...','合成输出...','渲染中...'][Math.min(Math.floor(i/12),3)]);}
 throw new Error('生成超时');}
-async function genSF(ak,pr){uPg(10,'调用SiliconFlow...');const body={model:'Wan-AI/Wan2.1-T2V-14B',prompt:pr};if(uImg)body.image=await f2b(uImg);
-const rsp=await fetch('https://api.siliconflow.cn/v1/video/submit',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
-if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.message||'错误');}
-const d=await rsp.json();uPg(30,'等待生成...');
-for(let i=0;i<120;i++){await slp(3000);const sr=await fetch('https://api.siliconflow.cn/v1/video/status/'+d.requestId,{headers:{'Authorization':'Bearer '+ak}});const sd=await sr.json();
-if(sd.status==='Succeed'){uPg(100,'🎉 完成！');rUrl=sd.results?.videos?.[0]?.url;if(rUrl)showR(rUrl);return;}
-if(sd.status==='Failed')throw new Error('失败');uPg(Math.min(90,30+(i/60)*60),'生成中...');}}
+async function genSF(ak,pr){uPg(10,'调用SiliconFlow...');
+const imgSize=mode==='video'?($('ar').value==='9:16'?'720x1280':$('ar').value==='1:1'?'960x960':'1280x720'):'1024x1024';
+const body={model:'Wan-AI/Wan2.2-T2V-A14B',prompt:pr,image_size:imgSize};
+if(uImg){body.model='Wan-AI/Wan2.2-I2V-A14B';body.image=await f2b(uImg);}
+const rsp=await fetch('https://api.siliconflow.cn/v1/'+(mode==='image'?'images/generations':'video/submit'),{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
+if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.message||e.error?.message||'SiliconFlow错误 '+rsp.status);}
+const d=await rsp.json();
+if(mode==='image'){rUrl=d.images?.[0]?.url||d.data?.[0]?.url;if(rUrl){uPg(100,'完成！');showR(rUrl);}return;}
+if(!d.requestId)throw new Error('未获取到requestId');
+uPg(30,'视频生成中（约1-3分钟）...');
+for(let i=0;i<120;i++){await slp(5000);
+const sr=await fetch('https://api.siliconflow.cn/v1/video/status',{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify({requestId:d.requestId})});
+const sd=await sr.json();
+if(sd.status==='Succeed'){uPg(100,'完成！');rUrl=sd.results?.videos?.[0]?.url;if(rUrl)showR(rUrl);return;}
+if(sd.status==='Failed')throw new Error('视频生成失败，请重试');
+uPg(Math.min(90,30+(i/120)*60),'生成中 '+(i*5)+'秒...');}
+throw new Error('生成超时');}
 async function genHF(ak,pr){uPg(10,'调用HuggingFace...');const model=mode==='image'?'black-forest-labs/FLUX.1-schnell':'Wan-AI/Wan2.1-T2V-14B';
 const rsp=await fetch('https://api-inference.huggingface.co/models/'+model,{method:'POST',headers:{'Authorization':'Bearer '+ak,'Content-Type':'application/json'},body:JSON.stringify({inputs:pr})});
 if(rsp.status===503){uPg(30,'模型加载中...');await slp(30000);return genHF(ak,pr);}
 if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.error||'错误');}
 uPg(80,'接收数据...');const blob=await rsp.blob();rUrl=URL.createObjectURL(blob);uPg(100,'🎉 完成！');showR(rUrl);}
-async function genFal(ak,pr){uPg(10,'调用fal.ai...');const ep=mode==='image'?'fal-ai/flux/schnell':'fal-ai/wan-t2v';const body={prompt:pr};
-if(mode==='video')body.num_frames=parseInt($('dur').value)*24;
+async function genFal(ak,pr){uPg(10,'调用fal.ai...');const ep=mode==='image'?'fal-ai/flux/schnell':'fal-ai/wan/v2.1/t2v';const body={prompt:pr};
+if(mode==='video'){body.num_frames=Math.min(parseInt($('dur').value)*24,120);body.resolution=$('ar').value==='9:16'?'720x1280':'1280x720';}
+if(mode==='image'){body.image_size={width:1024,height:1024};}
 const rsp=await fetch('https://queue.fal.run/'+ep,{method:'POST',headers:{'Authorization':'Key '+ak,'Content-Type':'application/json'},body:JSON.stringify(body)});
 if(!rsp.ok){const e=await rsp.json().catch(()=>({}));throw new Error(e.detail||'错误');}
 const d=await rsp.json();uPg(30,'已提交...');
